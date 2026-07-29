@@ -461,9 +461,7 @@ function playSnd(id){
   try{
     var ctx=getCtx();var t=ctx.currentTime;
     if(id=='bell'){
-      sndOsc(ctx,'sine',523,t+1.5,0.3);sndOsc(ctx,'sine',659,t+0.1,0.2);sndOsc(ctx,'sine',784,t+0.2,0.15);
-      var g=ctx.createGain();g.gain.setValueAtTime(0.25,t);g.gain.exponentialRampToValueAtTime(0.001,t+2);g.connect(masterGain);
-      var n=ctx.createBufferSource();n.buffer=noiseBuf(ctx,0.08);n.connect(g);n.start(t);n.stop(t+0.08);
+      sndOsc(ctx,'sine',523,1.8,0.3);sndOsc(ctx,'sine',659,1.4,0.2);sndOsc(ctx,'sine',784,1.0,0.15);
     }else if(id=='applause'){
       for(var i=0;i<40;i++){var off=Math.random()*1.2;var dur=0.04+Math.random()*0.08;var src=ctx.createBufferSource();src.buffer=noiseBuf(ctx,dur);var g=ctx.createGain();g.gain.setValueAtTime(0.08+Math.random()*0.12,t+off);if(dur>0.03)g.gain.exponentialRampToValueAtTime(0.001,t+off+dur);src.connect(g);g.connect(masterGain);src.start(t+off);src.stop(t+off+dur);}
     }else if(id=='buzzer'){
@@ -473,7 +471,7 @@ function playSnd(id){
     }else if(id=='ding'){
       sndOsc(ctx,'sine',1047,0.35,0.3);sndOsc(ctx,'sine',1319,0.35,0.2);
     }else if(id=='drumroll'){
-      for(var i=0;i<30;i++){var off=i*0.03;var vel=0.06+Math.random()*0.08;var src=ctx.createBufferSource();src.buffer=noiseBuf(ctx,0.04);var g=ctx.createGain();var amp=0.04+0.12*(1-i/30);g.gain.setValueAtTime(amp,t+off);src.connect(g);g.connect(masterGain);src.start(t+off);src.stop(t+off+0.04);}
+      for(var i=0;i<30;i++){var off=i*0.03;var src=ctx.createBufferSource();src.buffer=noiseBuf(ctx,0.04);var g=ctx.createGain();g.gain.setValueAtTime(0.04+0.12*(1-i/30),t+off);src.connect(g);g.connect(masterGain);src.start(t+off);src.stop(t+off+0.04);}
     }else if(id=='ticktock'){
       for(var i=0;i<6;i++){var off=i*0.5;(function(off){var osc=ctx.createOscillator();osc.type='sine';osc.frequency.value=2500;var g=ctx.createGain();g.gain.setValueAtTime(0.25,t+off);g.gain.exponentialRampToValueAtTime(0.001,t+off+0.04);osc.connect(g);g.connect(masterGain);osc.start(t+off);osc.stop(t+off+0.04);})(off);}
     }else if(id=='cheer'){
@@ -483,10 +481,7 @@ function playSnd(id){
     }else if(id=='boing'){
       var osc=ctx.createOscillator();osc.type='sine';osc.frequency.setValueAtTime(800,t);osc.frequency.exponentialRampToValueAtTime(60,t+0.5);var g=ctx.createGain();g.gain.setValueAtTime(0.3,t);g.gain.setValueAtTime(0.25,t+0.06);g.gain.setValueAtTime(0.2,t+0.12);g.gain.setValueAtTime(0.15,t+0.18);g.gain.setValueAtTime(0.1,t+0.24);g.gain.exponentialRampToValueAtTime(0.001,t+0.6);osc.connect(g);g.connect(masterGain);osc.start(t);osc.stop(t+0.6);
     }else if(id=='whistle'){
-      var osc=ctx.createOscillator();osc.type='sine';osc.frequency.setValueAtTime(1400,t);osc.frequency.linearRampToValueAtTime(2000,t+0.25);osc.frequency.linearRampToValueAtTime(1300,t+0.6);var g=ctx.createGain();g.gain.setValueAtTime(0.3,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.7);osc.connect(g);
-      var ng=ctx.createGain();ng.gain.setValueAtTime(0.06,t);ng.gain.exponentialRampToValueAtTime(0.001,t+0.5);var n=ctx.createBufferSource();n.buffer=noiseBuf(ctx,0.5);n.connect(ng);ng.connect(masterGain);n.start(t);n.stop(t+0.5);
-      var bp=ctx.createBiquadFilter();bp.type='bandpass';bp.frequency.value=3000;bp.Q.value=0.5;n.disconnect();n.connect(bp);bp.connect(ng);
-      g.connect(masterGain);osc.start(t);osc.stop(t+0.7);
+      var osc=ctx.createOscillator();osc.type='sine';osc.frequency.setValueAtTime(1400,t);osc.frequency.linearRampToValueAtTime(2000,t+0.25);osc.frequency.linearRampToValueAtTime(1300,t+0.6);var g=ctx.createGain();g.gain.setValueAtTime(0.3,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.7);osc.connect(g);g.connect(masterGain);osc.start(t);osc.stop(t+0.7);
     }else if(id=='laugh'){
       for(var i=0;i<5;i++){var off=i*0.2;(function(off){var osc=ctx.createOscillator();osc.type='sine';osc.frequency.setValueAtTime(350,t+off);osc.frequency.linearRampToValueAtTime(550,t+off+0.08);osc.frequency.linearRampToValueAtTime(400,t+off+0.15);var g=ctx.createGain();g.gain.setValueAtTime(0.25,t+off);g.gain.exponentialRampToValueAtTime(0.001,t+off+0.18);osc.connect(g);g.connect(masterGain);osc.start(t+off);osc.stop(t+off+0.18);})(off);}
     }
