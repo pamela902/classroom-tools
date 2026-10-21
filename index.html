@@ -61,6 +61,7 @@ small{color:#a0aec0;font-size:12px}
   <button class="tab-btn" onclick="showTab('stopwatch')">碼表</button>
   <button class="tab-btn" onclick="showTab('group')">分組</button>
   <button class="tab-btn" onclick="showTab('score')">計分</button>
+  <button class="tab-btn" onclick="showTab('vocab')">字根單字</button>
 </nav>
 
 <main>
@@ -178,6 +179,19 @@ small{color:#a0aec0;font-size:12px}
     <button class="btn btn-dan" onclick="resetScores()">重置分數</button>
   </div>
   <div id="scoreBd"></div>
+</div>
+
+<!-- 字根單字 -->
+<div id="pan-vocab" class="panel tc">
+  <h2>字根單字 15 講</h2>
+  <p style="color:#718096;margin-bottom:12px;font-size:14px">
+    高職統一入學測驗 + 多益 TOEIC｜15 個單字、15 個字根、83 題離線練習<br>
+    做完會產生一段「結果碼」，貼給老師就能統計全班最薄弱的單字。
+  </p>
+  <div class="gap6" style="justify-content:center">
+    <a class="btn btn-pri" href="vocab15/index.html" style="text-decoration:none;font-size:16px;padding:12px 28px">開始練習</a>
+    <a class="btn btn-suc" href="vocab15/講義.html" style="text-decoration:none;font-size:16px;padding:12px 28px">查看講義</a>
+  </div>
 </div>
 
 </main>
