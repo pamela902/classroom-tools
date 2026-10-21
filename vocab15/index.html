@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="zh-Hant"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>字根單字練習題器｜高職統測 + 多益</title>
+<style>
+:root{--ink:#1f2328;--muted:#5b6470;--line:#d8dee6;--accent:#2f6f4f;--ok:#1a7f4b;--no:#b5443a;--bg:#eef1f4}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;color:var(--ink);line-height:1.7}
+.wrap{max-width:860px;margin:0 auto;padding:16px 14px 60px}
+header.top{background:#fff;border-bottom:1px solid var(--line);padding:12px 16px;position:sticky;top:0;z-index:20;box-shadow:0 1px 6px rgba(0,0,0,.05)}
+.bar{max-width:860px;margin:0 auto;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+h1{font-size:17px;margin:0;font-weight:800;color:var(--accent)}
+.badge{font-size:12px;background:#eef2f7;border:1px solid var(--line);border-radius:20px;padding:2px 10px;color:var(--muted)}
+.stat{font-size:13px;color:var(--muted)}
+.stat b{color:var(--ink);font-size:15px}
+.pbar{flex:1;min-width:120px;height:8px;background:#e7ebef;border-radius:6px;overflow:hidden}
+.pbar i{display:block;height:100%;background:var(--accent);width:0;transition:width .25s}
+.tabs{max-width:860px;margin:0 auto;padding:10px 16px 0;display:flex;gap:8px;flex-wrap:wrap}
+.tab{border:1px solid var(--line);background:#fff;border-radius:8px 8px 0 0;padding:8px 14px;cursor:pointer;font-size:14px;color:var(--muted)}
+.tab.on{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:700}
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:22px 24px;margin:14px 0;box-shadow:0 1px 4px rgba(0,0,0,.05)}
+.qtype{display:inline-block;font-size:12px;background:var(--accent);color:#fff;border-radius:5px;padding:2px 9px;margin-bottom:10px}
+.qtype small{opacity:.85;margin-left:6px}
+.qtext{font-size:17px;margin:4px 0 18px}
+.qtext .ipa{color:var(--muted);font-size:15px}
+.qtext .zh{color:var(--muted);font-size:14px;display:block;margin-top:6px}
+.qtext b{color:var(--accent)}
+.opts{display:grid;gap:9px}
+.opt{display:flex;align-items:center;gap:10px;border:1.5px solid var(--line);border-radius:9px;padding:11px 14px;cursor:pointer;background:#fff;transition:.12s}
+.opt:hover{border-color:var(--accent);background:#f7fbf9}
+.opt .k{width:26px;height:26px;flex:0 0 26px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;font-size:13px;color:var(--muted)}
+.opt.sel{border-color:var(--accent);background:var(--accent2)}
+.opt.sel .k{background:var(--accent);color:#fff;border-color:var(--accent)}
+.opt.right{border-color:var(--ok);background:#e8f6ee}
+.opt.right .k{background:var(--ok);color:#fff;border-color:var(--ok)}
+.opt.wrong{border-color:var(--no);background:#fdeeed}
+.opt.wrong .k{background:var(--no);color:#fff;border-color:var(--no)}
+.opt.lock{cursor:default}
+.opt.lock:hover{border-color:var(--line);background:#fff}
+.opt.right:hover,.opt.wrong:hover{background:inherit}
+input[type=text]{width:100%;max-width:340px;border:1.5px solid var(--line);border-radius:9px;padding:11px 14px;font-size:16px;font-family:inherit}
+input[type=text]:focus{outline:none;border-color:var(--accent)}
+.fb{margin-top:16px;border-radius:9px;padding:13px 16px;font-size:14.5px;display:none}
+.fb.show{display:block}
+.fb.ok{background:#e8f6ee;border:1px solid #b7e0c6;color:#145c37}
+.fb.no{background:#fdeeed;border:1px solid #f0c4c0;color:#8c2f27}
+.fb .hd{font-weight:800;margin-bottom:5px}
+.nav{display:flex;gap:10px;margin-top:20px;align-items:center;flex-wrap:wrap}
+button{font-family:inherit;font-size:14px;border-radius:8px;padding:9px 18px;cursor:pointer;border:1.5px solid var(--accent);background:var(--accent);color:#fff;font-weight:600}
+button.ghost{background:#fff;color:var(--accent)}
+button:disabled{opacity:.4;cursor:not-allowed}
+.spacer{flex:1}
+.result{text-align:center;padding:26px}
+.result .score{font-size:56px;font-weight:800;color:var(--accent);line-height:1}
+.result .sub{color:var(--muted);margin:8px 0 22px}
+.wronglist{text-align:left;max-height:340px;overflow:auto;margin-top:18px}
+.wronglist div{border:1px solid var(--line);border-left:4px solid var(--no);border-radius:7px;padding:9px 13px;margin-bottom:8px;font-size:13.5px}
+.mini{height:8px;background:#e7ebef;border-radius:6px;overflow:hidden;min-width:90px}
+.mini i{display:block;height:100%;background:var(--accent)}
+#toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:#1f2328;color:#fff;
+  padding:10px 20px;border-radius:8px;font-size:14px;opacity:0;pointer-events:none;transition:.22s;z-index:99;max-width:90vw}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+input#sname,input#sseat{border:1.5px solid var(--line);border-radius:8px;min-height:40px;font-size:15px}
+/* ---- 可列印的紙本題目卷 ---- */
+.papersheet{display:none;background:#fff;border:1px solid var(--line);border-radius:12px;padding:30px 34px;margin:14px 0;font-size:14px}
+body.showpaper .papersheet{display:block}
+body.showpaper #main{display:none}
+.pp-h{text-align:center;border-bottom:2px solid var(--ink);padding-bottom:12px;margin-bottom:14px}
+.pp-h h2{margin:0;border:none;padding:0;font-size:21px}
+.pp-h .sub{color:var(--muted);font-size:13px;margin-top:5px}
+.pp-info{display:flex;gap:18px;flex-wrap:wrap;font-size:13.5px;margin:12px 0 18px;color:var(--ink)}
+.pp-info span{white-space:nowrap}
+.pp-sec{margin:20px 0 6px;font-weight:800;color:var(--accent);border-bottom:1px solid var(--line);padding-bottom:4px;font-size:15px}
+.pp-sec .hint{font-weight:400;color:var(--muted);font-size:12.5px;margin-left:8px}
+.pp-q{margin:9px 0;break-inside:avoid;line-height:1.85}
+.pp-q .no{font-weight:800;margin-right:4px}
+.pp-q .tagx{font-size:11px;background:#eef2f7;border:1px solid var(--line);border-radius:4px;padding:0 6px;color:var(--muted);margin-right:6px}
+.pp-q .opts{display:inline-flex;gap:16px;flex-wrap:wrap;margin-left:4px}
+.pp-q .bl{display:inline-block;min-width:190px;border-bottom:1px solid #999;height:1.1em}
+.pp-sheet{display:grid;grid-template-columns:repeat(10,1fr);gap:6px;margin-top:6px}
+.pp-sheet div{text-align:center;font-size:11.5px;color:var(--muted)}
+.pp-sheet i{display:block;border-bottom:1px solid #999;height:18px}
+@media print{
+  @page{size:A4;margin:15mm 14mm}
+  body{background:#fff}
+  header.top{position:static;box-shadow:none}
+  .tabs,.noprint,#main{display:none!important}
+  .papersheet{display:block!important;border:none;padding:0;margin:0;font-size:10.6pt}
+  .pp-q{break-inside:avoid;margin:7px 0}
+  .pp-sheet{grid-template-columns:repeat(10,1fr)}
+  a{color:#000;text-decoration:none}
+}
+.hidden{display:none!important}
+.hint{font-size:13px;color:var(--muted);margin-top:8px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+@media print{
+  @page{size:A4;margin:15mm 14mm}
+  body{background:#fff}
+  header.top{position:static;box-shadow:none}
+  .tabs,.noprint,#main{display:none!important}
+  .papersheet{display:block!important;border:none;padding:0;margin:0;font-size:10.6pt}
+  .pp-q{break-inside:avoid;margin:7px 0}
+  .pp-sheet{grid-template-columns:repeat(10,1fr)}
+  a{color:#000;text-decoration:none}
+}
+</style></head><body>
+<header class="top"><div class="bar">
+  <h1>字根單字 15 講 · 練習題器</h1>
+  <span class="badge">高職統測 + 多益</span>
+  <div class="pbar"><i id="pr"></i></div>
+  <span class="stat">得分 <b id="sc">0 / 0</b></span>
+  <span class="stat">已答 <b id="ac">0</b></span>
+</div>
+<div class="bar" style="margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)">
+  <input type="text" id="sname" placeholder="姓名" style="max-width:120px;padding:5px 10px;font-size:14px">
+  <input type="text" id="sseat" placeholder="座號" style="max-width:90px;padding:5px 10px;font-size:14px">
+  <span class="stat">填了名字，做完會產生一段「結果碼」貼給老師</span>
+</div></header>
+<div class="tabs noprint">
+  <div class="tab on" data-m="all">全部題目</div>
+  <div class="tab" data-m="wrong">只練錯題</div>
+  <div class="tab" data-m="paper">紙本題目卷</div>
+</div>
+<div class="wrap">
+<div id="main"></div>
+<div class="papersheet" id="paper">
+<div class="pp-h">
+  <h2>字根單字 15 講 · 測驗卷</h2>
+  <div class="sub">高職統一入學測驗 + 多益 TOEIC　│　共 83 題　│　滿分 83 分　│　建議時間 45 分鐘</div>
+</div>
+<div class="pp-info">
+  <span>班級：____________　</span><span>座號：____________　</span>
+  <span>姓名：____________　</span><span>日期：____________　</span>
+  <span>得分：________ / 83</span>
+</div>
+<div class="pp-sec">第一大題｜英譯中（每題 1 分，共 15 分）<span class="hint">每題選 1 個最合適的答案</span></div>
+<div class="pp-q"><span class="no">1.</span><span class="tagx">A</span><span class="bl" style="min-width:auto;border:none">inspect /ɪnˈspekt/ 的意思是什麼？</span><span class="opts">(A) 尊敬　(B) 檢查、察看　(C) 懷疑、嫌疑人　(D) 期望</span></div>
+<div class="pp-q"><span class="no">2.</span><span class="tagx">A</span><span class="bl" style="min-width:auto;border:none">appreciate /əˈpriːʃieɪt/ 的意思是什麼？</span><span class="opts">(A) 貶值、貶損　(B) 評估　(C) 折價、減價　(D) 感激、欣賞</span></div>
+<div class="pp-q"><span class="no">3.</span><span class="tagx">A</span><span class="bl" style="min-width:auto;border:none">predict /prɪˈdɪkt/ 的意思是什麼？</span><span class="opts">(A) 預報（官方數據、財測）　(B) 預測（依據數據或規律）　(C) 預期（主觀期待）　(D) 預見（心中已看到）</span></div>
+<div class="pp-q"><span class="no">4.</span><span class="tagx">A</span><span class="bl" style="min-width:auto;border:none">bankruptcy /ˈbæŋkrʌpsi/ 的意思是什麼？</span><span class="opts">(A) 爆發（火山、爭端）　(B) 破產（公司倒閉）　(C) 壞掉了；沒錢了　(D) 打斷（談話）</span></div>
+<div class="pp-q"><span class="no">5.</span><span class="tagx">A</span><span class="bl" style="min-width:auto;border:none">fluent /ˈfluːənt/ 的意思是什麼？</span><span class="opts">(A) 流行性感冒　(B) 流利的（說話）　(C) 流體的；流動的　(D) 富裕的</span></div>
+<div class="pp-q"><span class="no">6.</span><span class="tagx">A</span><span class="bl" style="min-width:auto;border:none">enlighten /ɪnˈlaɪtn/ 的意思是什麼？</span><span class="opts">(A) 使明瞭、啟發　(B) 使歡喜　(C) 減輕　(D) 困境、苦境</span></div>
+<div class="pp-q"><span class="no">7.</span><span class="tagx">A</span><span class="bl" style="min-width:auto;border:none">imminent /ˈɪmɪnənt/ 的意思是什麼？</span><span class="opts">(A) 待決的、懸而未決的　(B) 傑出的、有名望的　(C) 突出的、著名的　(D) 即將發生的</span></div>
+<div class="pp-q"><span class="no">8.</span><span class="tagx">A</span><span class="bl" style="min-width:auto;border:none">stationery /ˈsteɪʃəneri/ 的意思是什麼？</span><span class="opts">(A) 靜電的；靜態的　(B) 靜止不動的　(C) 車站；站　(D) 文具、信紙</span></div>
+<div class="pp-q"><span class="no">9.</span><span class="tagx">A</span><span class="bl" style="min-width:auto;border:none">resist /rɪˈzɪst/ 的意思是什麼？</span><span class="opts">(A) 協助、助力　(B) 持續、撐下去　(C) 堅持（insist that 要求）　(D) 抵抗、抵制</span></div>
+<div class="pp-q"><span class="no">10.</span><span class="tagx">A</span><span class="bl" style="min-width:auto;border:none">descendant /dɪˈsendənt/ 的意思是什麼？</span><span class="opts">(A) 創始者、先驅　(B) 祖先　(C) 下降、出身於　(D) 後代、子孫</span></div>
+<div class="pp-q"><span class="no">11.</span><span class="tagx">A</span><span class="bl" style="min-width:auto;border:none">inhabit /ɪnˈhæbɪt/ 的意思是什麼？</span><span class="opts">(A) 習慣　(B) 棲息地　(C) 抑制、阻止　(D) 居住於、棲息於</span></div>
+<div class="pp-q"><span class="no">12.</span><span class="tagx">A</span><span class="bl" style="min-width:auto;border:none">contemporary /kənˈtemprəri/ 的意思是什麼？</span><span class="opts">(A) 年表、年代記　(B) 永久的　(C) 暫時的　(D) 當代的、同時代的</span></div>
+<div class="pp-q"><span class="no">13.</span><span class="tagx">A</span><span class="bl" style="min-width:auto;border:none">literacy /ˈlɪtərəsi/ 的意思是什麼？</span><span class="opts">(A) 識字、讀寫能力　(B) 不識字的　(C) 計算能力　(D) 識字的（形容詞）</span></div>
+<div class="pp-q"><span class="no">14.</span><span class="tagx">A</span><span class="bl" style="min-width:auto;border:none">accelerate /əkˈseləreɪt/ 的意思是什麼？</span><span class="opts">(A) 減輕、緩和　(B) 減速　(C) 加速　(D) 快速（名詞）</span></div>
+<div class="pp-q"><span class="no">15.</span><span class="tagx">A</span><span class="bl" style="min-width:auto;border:none">vacancy /ˈveɪkənsi/ 的意思是什麼？</span><span class="opts">(A) 職業、使命感　(B) 假期　(C) 空缺、空房　(D) 空著的（形容詞）</span></div>
+<div class="pp-sec">第二大題｜中譯英（每題 1 分，共 10 分）<span class="hint">每題選 1 個最合適的答案</span></div>
+<div class="pp-q"><span class="no">16.</span><span class="tagx">B</span><span class="bl" style="min-width:auto;border:none">「檢查、察看」對應的英文單字是？</span><span class="opts">(A) suspect　(B) respect　(C) expect　(D) inspect</span></div>
+<div class="pp-q"><span class="no">17.</span><span class="tagx">B</span><span class="bl" style="min-width:auto;border:none">「感激」對應的英文單字是？</span><span class="opts">(A) depreciate　(B) evaluate　(C) appreciate　(D) devalue</span></div>
+<div class="pp-q"><span class="no">18.</span><span class="tagx">B</span><span class="bl" style="min-width:auto;border:none">「預測」對應的英文單字是？</span><span class="opts">(A) expect　(B) foresee　(C) forecast　(D) predict</span></div>
+<div class="pp-q"><span class="no">19.</span><span class="tagx">B</span><span class="bl" style="min-width:auto;border:none">「破產」對應的英文單字是？</span><span class="opts">(A) bankruptcy　(B) erupt　(C) broke　(D) interrupt</span></div>
+<div class="pp-q"><span class="no">20.</span><span class="tagx">B</span><span class="bl" style="min-width:auto;border:none">「流利的」對應的英文單字是？</span><span class="opts">(A) influenza　(B) fluent　(C) affluent　(D) fluid</span></div>
+<div class="pp-q"><span class="no">21.</span><span class="tagx">B</span><span class="bl" style="min-width:auto;border:none">「啟發」對應的英文單字是？</span><span class="opts">(A) lighten　(B) enlighten　(C) delight　(D) plight</span></div>
+<div class="pp-q"><span class="no">22.</span><span class="tagx">B</span><span class="bl" style="min-width:auto;border:none">「即將發生的」對應的英文單字是？</span><span class="opts">(A) imminent　(B) pending　(C) eminent　(D) prominent</span></div>
+<div class="pp-q"><span class="no">23.</span><span class="tagx">B</span><span class="bl" style="min-width:auto;border:none">「文具」對應的英文單字是？</span><span class="opts">(A) stationery　(B) static　(C) stationary　(D) station</span></div>
+<div class="pp-q"><span class="no">24.</span><span class="tagx">B</span><span class="bl" style="min-width:auto;border:none">「抵抗」對應的英文單字是？</span><span class="opts">(A) persist　(B) assist　(C) insist　(D) resist</span></div>
+<div class="pp-q"><span class="no">25.</span><span class="tagx">B</span><span class="bl" style="min-width:auto;border:none">「子孫、後代」對應的英文單字是？</span><span class="opts">(A) ancestor　(B) descend　(C) descendant　(D) offspring</span></div>
+<div class="pp-q"><span class="no">26.</span><span class="tagx">B</span><span class="bl" style="min-width:auto;border:none">「居住於」對應的英文單字是？</span><span class="opts">(A) habitat　(B) habit　(C) inhabit　(D) inhibit</span></div>
+<div class="pp-q"><span class="no">27.</span><span class="tagx">B</span><span class="bl" style="min-width:auto;border:none">「當代的」對應的英文單字是？</span><span class="opts">(A) temporary　(B) contemporary　(C) chronology　(D) permanent</span></div>
+<div class="pp-q"><span class="no">28.</span><span class="tagx">B</span><span class="bl" style="min-width:auto;border:none">「識字」對應的英文單字是？</span><span class="opts">(A) illiterate　(B) numeracy　(C) literate　(D) literacy</span></div>
+<div class="pp-q"><span class="no">29.</span><span class="tagx">B</span><span class="bl" style="min-width:auto;border:none">「加速」對應的英文單字是？</span><span class="opts">(A) decelerate　(B) celerity　(C) expedite　(D) accelerate</span></div>
+<div class="pp-q"><span class="no">30.</span><span class="tagx">B</span><span class="bl" style="min-width:auto;border:none">「空缺（職缺）」對應的英文單字是？</span><span class="opts">(A) vocation　(B) vacancy　(C) vacant　(D) vacation</span></div>
+<div class="pp-sec">第三大題｜字根配對（每題 1 分，共 8 分）<span class="hint">看字根推單字</span></div>
+<div class="pp-q"><span class="no">31.</span><span class="tagx">C</span><span class="bl" style="min-width:auto;border:none">字根 -spect-（看）可以推得下列哪個單字？</span><span class="opts">(A) appreciate　(B) predict　(C) inspect　(D) bankruptcy</span></div>
+<div class="pp-q"><span class="no">32.</span><span class="tagx">C</span><span class="bl" style="min-width:auto;border:none">字根 -preci-（價值）可以推得下列哪個單字？</span><span class="opts">(A) predict　(B) inspect　(C) bankruptcy　(D) appreciate</span></div>
+<div class="pp-q"><span class="no">33.</span><span class="tagx">C</span><span class="bl" style="min-width:auto;border:none">字根 -dict-（說）可以推得下列哪個單字？</span><span class="opts">(A) predict　(B) appreciate　(C) inspect　(D) bankruptcy</span></div>
+<div class="pp-q"><span class="no">34.</span><span class="tagx">C</span><span class="bl" style="min-width:auto;border:none">字根 -rupt-（破裂）可以推得下列哪個單字？</span><span class="opts">(A) appreciate　(B) inspect　(C) predict　(D) bankruptcy</span></div>
+<div class="pp-q"><span class="no">35.</span><span class="tagx">C</span><span class="bl" style="min-width:auto;border:none">字根 -flu-（流動）可以推得下列哪個單字？</span><span class="opts">(A) inspect　(B) fluent　(C) appreciate　(D) predict</span></div>
+<div class="pp-q"><span class="no">36.</span><span class="tagx">C</span><span class="bl" style="min-width:auto;border:none">字根 -light-（光）可以推得下列哪個單字？</span><span class="opts">(A) appreciate　(B) enlighten　(C) predict　(D) inspect</span></div>
+<div class="pp-q"><span class="no">37.</span><span class="tagx">C</span><span class="bl" style="min-width:auto;border:none">字根 -pend-（懸掛）可以推得下列哪個單字？</span><span class="opts">(A) inspect　(B) appreciate　(C) imminent　(D) predict</span></div>
+<div class="pp-q"><span class="no">38.</span><span class="tagx">C</span><span class="bl" style="min-width:auto;border:none">字根 -sta-（站）可以推得下列哪個單字？</span><span class="opts">(A) predict　(B) inspect　(C) stationery　(D) appreciate</span></div>
+<div class="pp-q"><span class="no">39.</span><span class="tagx">C</span><span class="bl" style="min-width:auto;border:none">字根 -sist-（站）可以推得下列哪個單字？</span><span class="opts">(A) inspect　(B) appreciate　(C) predict　(D) resist</span></div>
+<div class="pp-q"><span class="no">40.</span><span class="tagx">C</span><span class="bl" style="min-width:auto;border:none">字根 -scend-（爬）可以推得下列哪個單字？</span><span class="opts">(A) inspect　(B) descendant　(C) appreciate　(D) predict</span></div>
+<div class="pp-q"><span class="no">41.</span><span class="tagx">C</span><span class="bl" style="min-width:auto;border:none">字根 -habit-（居住）可以推得下列哪個單字？</span><span class="opts">(A) inhabit　(B) inspect　(C) predict　(D) appreciate</span></div>
+<div class="pp-q"><span class="no">42.</span><span class="tagx">C</span><span class="bl" style="min-width:auto;border:none">字根 -tempor-（時間）可以推得下列哪個單字？</span><span class="opts">(A) inspect　(B) contemporary　(C) appreciate　(D) predict</span></div>
+<div class="pp-sec">第四大題｜字根補字（每題 1 分，共 10 分）<span class="hint">請在橫線上拼出完整單字</span></div>
+<div class="pp-q"><span class="no">43.</span><span class="tagx">D</span>字根 -spect-（看）＋「檢查、察看」→ 請拼出完整單字（共 7 個字母） <span class="bl"></span></div>
+<div class="pp-q"><span class="no">44.</span><span class="tagx">D</span>字根 -preci-（價值）＋「感激」→ 請拼出完整單字（共 10 個字母） <span class="bl"></span></div>
+<div class="pp-q"><span class="no">45.</span><span class="tagx">D</span>字根 -dict-（說）＋「預測」→ 請拼出完整單字（共 7 個字母） <span class="bl"></span></div>
+<div class="pp-q"><span class="no">46.</span><span class="tagx">D</span>字根 -rupt-（破裂）＋「破產」→ 請拼出完整單字（共 10 個字母） <span class="bl"></span></div>
+<div class="pp-q"><span class="no">47.</span><span class="tagx">D</span>字根 -flu-（流動）＋「流利的」→ 請拼出完整單字（共 6 個字母） <span class="bl"></span></div>
+<div class="pp-q"><span class="no">48.</span><span class="tagx">D</span>字根 -light-（光）＋「啟發」→ 請拼出完整單字（共 9 個字母） <span class="bl"></span></div>
+<div class="pp-q"><span class="no">49.</span><span class="tagx">D</span>字根 -pend-（懸掛）＋「即將發生的」→ 請拼出完整單字（共 8 個字母） <span class="bl"></span></div>
+<div class="pp-q"><span class="no">50.</span><span class="tagx">D</span>字根 -sta-（站）＋「文具」→ 請拼出完整單字（共 10 個字母） <span class="bl"></span></div>
+<div class="pp-q"><span class="no">51.</span><span class="tagx">D</span>字根 -sist-（站）＋「抵抗」→ 請拼出完整單字（共 6 個字母） <span class="bl"></span></div>
+<div class="pp-q"><span class="no">52.</span><span class="tagx">D</span>字根 -scend-（爬）＋「子孫、後代」→ 請拼出完整單字（共 10 個字母） <span class="bl"></span></div>
+<div class="pp-q"><span class="no">53.</span><span class="tagx">D</span>字根 -habit-（居住）＋「居住於」→ 請拼出完整單字（共 7 個字母） <span class="bl"></span></div>
+<div class="pp-q"><span class="no">54.</span><span class="tagx">D</span>字根 -tempor-（時間）＋「當代的」→ 請拼出完整單字（共 12 個字母） <span class="bl"></span></div>
+<div class="pp-sec">第五大題｜易混淆字（每題 1 分，共 12 分）<span class="hint">依情境選最合適的字</span></div>
+<div class="pp-q"><span class="no">55.</span><span class="tagx">E</span><span class="bl" style="min-width:auto;border:none">The train remained ＿＿＿＿＿ at the platform because of the signal was red.</span><span class="opts">(A) station　(B) stationery　(C) stationary　(D) statue</span></div>
+<div class="pp-q"><span class="no">56.</span><span class="tagx">E</span><span class="bl" style="min-width:auto;border:none">A decision on the new policy is ＿＿＿＿＿, so please wait for the announcement.</span><span class="opts">(A) prominent　(B) eminent　(C) imminent　(D) pending</span></div>
+<div class="pp-q"><span class="no">57.</span><span class="tagx">E</span><span class="bl" style="min-width:auto;border:none">The sign says “Parking ＿＿＿＿＿ for customers only.”</span><span class="opts">(A) contemporary　(B) temporary　(C) chronic　(D) permanent</span></div>
+<div class="pp-q"><span class="no">58.</span><span class="tagx">E</span><span class="bl" style="min-width:auto;border:none">She booked a two-week ＿＿＿＿＿ to travel around Asia.</span><span class="opts">(A) vocation　(B) vacation　(C) vacancy　(D) vacant</span></div>
+<div class="pp-q"><span class="no">59.</span><span class="tagx">E</span><span class="bl" style="min-width:auto;border:none">Because of the storm, the plane began to ＿＿＿＿＿ to a lower altitude.</span><span class="opts">(A) descend　(B) transcend　(C) descendant　(D) ascend</span></div>
+<div class="pp-q"><span class="no">60.</span><span class="tagx">E</span><span class="bl" style="min-width:auto;border:none">Polar bears ＿＿＿＿＿ the Arctic region for most of the year.</span><span class="opts">(A) inhibit　(B) habituate　(C) inhabit　(D) exhibit</span></div>
+<div class="pp-q"><span class="no">61.</span><span class="tagx">E</span><span class="bl" style="min-width:auto;border:none">She is quite ＿＿＿＿＿ in English and can negotiate without an interpreter.</span><span class="opts">(A) influenza　(B) affluent　(C) fluid　(D) fluent</span></div>
+<div class="pp-q"><span class="no">62.</span><span class="tagx">E</span><span class="bl" style="min-width:auto;border:none">I ＿＿＿＿＿ on paying for the meal — it was my treat.</span><span class="opts">(A) assisted　(B) insisted　(C) resisted　(D) persisted</span></div>
+<div class="pp-q"><span class="no">63.</span><span class="tagx">E</span><span class="bl" style="min-width:auto;border:none">The factory was ＿＿＿＿＿ after the bank refused to renew its loan.</span><span class="opts">(A) corrupted　(B) interrupted　(C) erupted　(D) bankrupt</span></div>
+<div class="pp-q"><span class="no">64.</span><span class="tagx">E</span><span class="bl" style="min-width:auto;border:none">The company reported a sharp ＿＿＿＿＿ in the value of its assets.</span><span class="opts">(A) inspection　(B) prediction　(C) depreciation　(D) appreciation</span></div>
+<div class="pp-q"><span class="no">65.</span><span class="tagx">E</span><span class="bl" style="min-width:auto;border:none">Customs officers may ＿＿＿＿＿ your luggage before the flight.</span><span class="opts">(A) suspect　(B) inspect　(C) expect　(D) respect</span></div>
+<div class="pp-q"><span class="no">66.</span><span class="tagx">E</span><span class="bl" style="min-width:auto;border:none">The lecture on climate policy was extremely ＿＿＿＿＿; I learned a lot.</span><span class="opts">(A) enlightening　(B) lightening　(C) plight　(D) delighting</span></div>
+<div class="pp-q"><span class="no">67.</span><span class="tagx">E</span><span class="bl" style="min-width:auto;border:none">The adult education program aims to improve functional ＿＿＿＿＿ in rural communities.</span><span class="opts">(A) illiteracy　(B) numeracy　(C) literature　(D) literacy</span></div>
+<div class="pp-q"><span class="no">68.</span><span class="tagx">E</span><span class="bl" style="min-width:auto;border:none">The factory installed new software to speed up the process and ＿＿＿＿＿ output.</span><span class="opts">(A) celery　(B) accelerate　(C) decelerate　(D) expedite</span></div>
+<div class="pp-sec">第六大題｜例句填空（每題 1 分，共 8 分）<span class="hint">把單字填回句中</span></div>
+<div class="pp-q"><span class="no">69.</span><span class="tagx">F</span><span class="bl" style="min-width:auto;border:none">完成句子： Customs officers may ＿＿＿＿＿ your luggage at the airport. （海關人員可能在機場查驗你的行李。）</span><span class="opts">(A) inspect　(B) suspect　(C) expect　(D) respect</span></div>
+<div class="pp-q"><span class="no">70.</span><span class="tagx">F</span><span class="bl" style="min-width:auto;border:none">完成句子： I would ＿＿＿＿＿ it if you could reply by Friday. （若您能在週五前回覆，我將不胜感激。）</span><span class="opts">(A) devalue　(B) appreciate　(C) evaluate　(D) depreciate</span></div>
+<div class="pp-q"><span class="no">71.</span><span class="tagx">F</span><span class="bl" style="min-width:auto;border:none">完成句子： No one can ＿＿＿＿＿ how the market will react. （沒有人能預測市場會如何反應。）</span><span class="opts">(A) forecast　(B) expect　(C) foresee　(D) predict</span></div>
+<div class="pp-q"><span class="no">72.</span><span class="tagx">F</span><span class="bl" style="min-width:auto;border:none">完成句子： The company's ＿＿＿＿＿ sent shock waves through the whole industry. （該公司的破產在整個業界引起震盪。）</span><span class="opts">(A) bankruptcy　(B) erupt　(C) interrupt　(D) broke</span></div>
+<div class="pp-q"><span class="no">73.</span><span class="tagx">F</span><span class="bl" style="min-width:auto;border:none">完成句子： She is ＿＿＿＿＿ in English and Japanese. （她的英語和日語都很流利。）</span><span class="opts">(A) influenza　(B) affluent　(C) fluent　(D) fluid</span></div>
+<div class="pp-q"><span class="no">74.</span><span class="tagx">F</span><span class="bl" style="min-width:auto;border:none">完成句子： The lecture ＿＿＿＿＿ me on the causes of the war. （那場演講讓我對戰爭的成因茅塞頓開。）</span><span class="opts">(A) lighten　(B) plight　(C) delight　(D) enlighten</span></div>
+<div class="pp-q"><span class="no">75.</span><span class="tagx">F</span><span class="bl" style="min-width:auto;border:none">完成句子： A decision on the new policy is ＿＿＿＿＿, so please wait. （新政策的決定即將出台，請稍候。）</span><span class="opts">(A) pending　(B) imminent　(C) eminent　(D) prominent</span></div>
+<div class="pp-q"><span class="no">76.</span><span class="tagx">F</span><span class="bl" style="min-width:auto;border:none">完成句子： Please order the ＿＿＿＿＿ by Friday. （請在週五前訂購文具用品。）</span><span class="opts">(A) static　(B) stationery　(C) station　(D) stationary</span></div>
+<div class="pp-q"><span class="no">77.</span><span class="tagx">F</span><span class="bl" style="min-width:auto;border:none">完成句子： This new alloy ＿＿＿＿＿ high temperatures. （這種新合金耐得住高溫。）</span><span class="opts">(A) persist　(B) resist　(C) assist　(D) insist</span></div>
+<div class="pp-q"><span class="no">78.</span><span class="tagx">F</span><span class="bl" style="min-width:auto;border:none">完成句子： Their ＿＿＿＿＿ still live in this village. （他們的後代至今仍住在這個村莊。）</span><span class="opts">(A) offspring　(B) ancestor　(C) descend　(D) descendant</span></div>
+<div class="pp-sec">第七大題｜拼字挑戰（每題 1 分，共 5 分）<span class="hint">看中文與字根，拼出單字</span></div>
+<div class="pp-q"><span class="no">79.</span><span class="tagx">G</span>「居住於」 字根：-habit-（居住） 首字母：i　共 7 個字母 <span class="bl"></span></div>
+<div class="pp-q"><span class="no">80.</span><span class="tagx">G</span>「當代的」 字根：-tempor-（時間） 首字母：c　共 12 個字母 <span class="bl"></span></div>
+<div class="pp-q"><span class="no">81.</span><span class="tagx">G</span>「識字」 字根：-liter-（文字） 首字母：l　共 8 個字母 <span class="bl"></span></div>
+<div class="pp-q"><span class="no">82.</span><span class="tagx">G</span>「加速」 字根：-celer-（快速） 首字母：a　共 10 個字母 <span class="bl"></span></div>
+<div class="pp-q"><span class="no">83.</span><span class="tagx">G</span>「空缺（職缺）」 字根：-vac-（空） 首字母：v　共 7 個字母 <span class="bl"></span></div>
+<div class="pp-sec">答題卡｜選擇題請填寫字母，輸入題請填寫單字</div>
+<div class="pp-sheet"><div>1.<i></i></div><div>2.<i></i></div><div>3.<i></i></div><div>4.<i></i></div><div>5.<i></i></div><div>6.<i></i></div><div>7.<i></i></div><div>8.<i></i></div><div>9.<i></i></div><div>10.<i></i></div><div>11.<i></i></div><div>12.<i></i></div><div>13.<i></i></div><div>14.<i></i></div><div>15.<i></i></div><div>16.<i></i></div><div>17.<i></i></div><div>18.<i></i></div><div>19.<i></i></div><div>20.<i></i></div><div>21.<i></i></div><div>22.<i></i></div><div>23.<i></i></div><div>24.<i></i></div><div>25.<i></i></div><div>26.<i></i></div><div>27.<i></i></div><div>28.<i></i></div><div>29.<i></i></div><div>30.<i></i></div><div>31.<i></i></div><div>32.<i></i></div><div>33.<i></i></div><div>34.<i></i></div><div>35.<i></i></div><div>36.<i></i></div><div>37.<i></i></div><div>38.<i></i></div><div>39.<i></i></div><div>40.<i></i></div><div>41.<i></i></div><div>42.<i></i></div><div>43.<i></i></div><div>44.<i></i></div><div>45.<i></i></div><div>46.<i></i></div><div>47.<i></i></div><div>48.<i></i></div><div>49.<i></i></div><div>50.<i></i></div><div>51.<i></i></div><div>52.<i></i></div><div>53.<i></i></div><div>54.<i></i></div><div>55.<i></i></div><div>56.<i></i></div><div>57.<i></i></div><div>58.<i></i></div><div>59.<i></i></div><div>60.<i></i></div><div>61.<i></i></div><div>62.<i></i></div><div>63.<i></i></div><div>64.<i></i></div><div>65.<i></i></div><div>66.<i></i></div><div>67.<i></i></div><div>68.<i></i></div><div>69.<i></i></div><div>70.<i></i></div><div>71.<i></i></div><div>72.<i></i></div><div>73.<i></i></div><div>74.<i></i></div><div>75.<i></i></div><div>76.<i></i></div><div>77.<i></i></div><div>78.<i></i></div><div>79.<i></i></div><div>80.<i></i></div><div>81.<i></i></div><div>82.<i></i></div><div>83.<i></i></div></div>
+<div class="pp-sec" style="margin-top:16px">教師備註</div><div style="border:1px solid var(--line);border-radius:6px;height:64px"></div>
+</div>
+<p class="noprint" style="color:#5b6470;font-size:12.5px;margin-top:24px">
+來源：Ruby的無腦英文小教室《英文單字三十六記》｜進度自動存在本機瀏覽器，關掉分頁不會遺失。<br>
+<a href="講義.html" style="display:inline-block;margin:4px 0 8px;padding:9px 16px;background:#2f6f4f;color:#fff;border-radius:8px;text-decoration:none;font-size:14px">📖 開啟字根單字講義（15 個字根完整拆解）</a>
+「紙本題目卷」分頁可直接列印成 A4 考卷（答案與解析請開啟「教師版答案卷.html」）。<br>
+直接按 Ctrl／⌘ + P 列印時，也會自動輸出完整題目卷。
+</p></div>
+<div id="toast"></div>
+<script>
+const Q = [{"type": "A", "cat": "英譯中", "word": "inspect", "n": 1, "q": "<b>inspect</b> <span class=\"ipa\">/ɪnˈspekt/</span> 的意思是什麼？", "options": ["尊敬", "檢查、察看", "懷疑、嫌疑人", "期望"], "answer": "檢查、察看", "explain": "inspect（v. 檢查、察看；調查）＝ 檢查、察看；調查。-spect- = 看。in- 表示「往裡頭」，往裡仔細看就是檢查。"}, {"type": "A", "cat": "英譯中", "word": "appreciate", "n": 2, "q": "<b>appreciate</b> <span class=\"ipa\">/əˈpriːʃieɪt/</span> 的意思是什麼？", "options": ["貶值、貶損", "評估", "折價、減價", "感激、欣賞"], "answer": "感激、欣賞", "explain": "appreciate（v. 感激；欣賞；體會到；使增值）＝ 感激；欣賞；體會到；使增值。-preci- = 價值。ap- 是「朝向／加強」，把價值收進心裡就是 appreciate。"}, {"type": "A", "cat": "英譯中", "word": "predict", "n": 3, "q": "<b>predict</b> <span class=\"ipa\">/prɪˈdɪkt/</span> 的意思是什麼？", "options": ["預報（官方數據、財測）", "預測（依據數據或規律）", "預期（主觀期待）", "預見（心中已看到）"], "answer": "預測（依據數據或規律）", "explain": "predict（v. 預測；預言）＝ 預測；預言。-dict- = 說。pre- = 事先，「事先說出口」＝預測。"}, {"type": "A", "cat": "英譯中", "word": "bankruptcy", "n": 4, "q": "<b>bankruptcy</b> <span class=\"ipa\">/ˈbæŋkrʌpsi/</span> 的意思是什麼？", "options": ["爆發（火山、爭端）", "破產（公司倒閉）", "壞掉了；沒錢了", "打斷（談話）"], "answer": "破產（公司倒閉）", "explain": "bankruptcy（n. 破產（adj. bankrupt；片語 go bankrupt））＝ 破產；破產的。bank（銀行）＋ rupt（破裂）＝「銀行都破了」→ 破產。"}, {"type": "A", "cat": "英譯中", "word": "fluent", "n": 5, "q": "<b>fluent</b> <span class=\"ipa\">/ˈfluːənt/</span> 的意思是什麼？", "options": ["流行性感冒", "流利的（說話）", "流體的；流動的", "富裕的"], "answer": "流利的（說話）", "explain": "fluent（adj. 流利的；（言語）流暢的）＝ 流利的；（言語）流暢的。flu = 流。話「流」得出來、不卡頓，就是流利。"}, {"type": "A", "cat": "英譯中", "word": "enlighten", "n": 6, "q": "<b>enlighten</b> <span class=\"ipa\">/ɪnˈlaɪtn/</span> 的意思是什麼？", "options": ["使明瞭、啟發", "使歡喜", "減輕", "困境、苦境"], "answer": "使明瞭、啟發", "explain": "enlighten（v. 啟發；使明瞭；教育）＝ 啟發；使明瞭；教育。en- = 「使…」，light = 光，「使它有光」＝使明瞭。"}, {"type": "A", "cat": "英譯中", "word": "imminent", "n": 7, "q": "<b>imminent</b> <span class=\"ipa\">/ˈɪmɪnənt/</span> 的意思是什麼？", "options": ["待決的、懸而未決的", "傑出的、有名望的", "突出的、著名的", "即將發生的"], "answer": "即將發生的", "explain": "imminent（adj. 即將發生的；逼近的）＝ 即將發生的；逼近的。-pend- = 懸掛。im- + min 表示「已伸到眼前」→ 即將發生。"}, {"type": "A", "cat": "英譯中", "word": "stationery", "n": 8, "q": "<b>stationery</b> <span class=\"ipa\">/ˈsteɪʃəneri/</span> 的意思是什麼？", "options": ["靜電的；靜態的", "靜止不動的", "車站；站", "文具、信紙"], "answer": "文具、信紙", "explain": "stationery（n. 文具；信紙（辦公用品）；adj. 文具的）＝ 文具；信紙（辦公用品）；文具的。station（站）＋ -ery（賣東西的地方）＝ 文具；stationary 才是「不動的」。"}, {"type": "A", "cat": "英譯中", "word": "resist", "n": 9, "q": "<b>resist</b> <span class=\"ipa\">/rɪˈzɪst/</span> 的意思是什麼？", "options": ["協助、助力", "持續、撐下去", "堅持（insist that 要求）", "抵抗、抵制"], "answer": "抵抗、抵制", "explain": "resist（v. 抵抗；抵制；忍住）＝ 抵抗；抵制；忍住（-resist doing sth.）。re- = 往對面，sist = 站。站在對面擋住 → 抵抗。"}, {"type": "A", "cat": "英譯中", "word": "descendant", "n": 10, "q": "<b>descendant</b> <span class=\"ipa\">/dɪˈsendənt/</span> 的意思是什麼？", "options": ["創始者、先驅", "祖先", "下降、出身於", "後代、子孫"], "answer": "後代、子孫", "explain": "descendant（n. 子孫、後代；（adj.）下降的）＝ 子孫、後代；下降的。de- = 往下，scand = 爬。子孫一代一代「往下」傳 → 後代。"}, {"type": "A", "cat": "英譯中", "word": "inhabit", "n": 11, "q": "<b>inhabit</b> <span class=\"ipa\">/ɪnˈhæbɪt/</span> 的意思是什麼？", "options": ["習慣", "棲息地", "抑制、阻止", "居住於、棲息於"], "answer": "居住於、棲息於", "explain": "inhabit（v. 居住於；棲息於；占據（空間））＝ 居住於；棲息於；占據（空間）。in- = 在裡面，habit = 住，「住在裡面」＝ inhabit。"}, {"type": "A", "cat": "英譯中", "word": "contemporary", "n": 12, "q": "<b>contemporary</b> <span class=\"ipa\">/kənˈtemprəri/</span> 的意思是什麼？", "options": ["年表、年代記", "永久的", "暫時的", "當代的、同時代的"], "answer": "當代的、同時代的", "explain": "contemporary（adj. 當代的；同時代的；n. 同時代的人）＝ 當代的；同時代的；同時代的人。con- = 共同，tempor = 時間，「同一時間」＝當代的。"}, {"type": "A", "cat": "英譯中", "word": "literacy", "n": 13, "q": "<b>literacy</b> <span class=\"ipa\">/ˈlɪtərəsi/</span> 的意思是什麼？", "options": ["識字、讀寫能力", "不識字的", "計算能力", "識字的（形容詞）"], "answer": "識字、讀寫能力", "explain": "literacy（n. 識字；讀寫能力；識字率）＝ 識字；讀寫能力；識字率。liter = 文字，-acy = 「…的能力」→ 識字能力。"}, {"type": "A", "cat": "英譯中", "word": "accelerate", "n": 14, "q": "<b>accelerate</b> <span class=\"ipa\">/əkˈseləreɪt/</span> 的意思是什麼？", "options": ["減輕、緩和", "減速", "加速", "快速（名詞）"], "answer": "加速", "explain": "accelerate（v. 加速；使加快；促進）＝ 加速；使加快；促進。ac- = 加強，celer = 快，「讓它更快」＝加速。"}, {"type": "A", "cat": "英譯中", "word": "vacancy", "n": 15, "q": "<b>vacancy</b> <span class=\"ipa\">/ˈveɪkənsi/</span> 的意思是什麼？", "options": ["職業、使命感", "假期", "空缺、空房", "空著的（形容詞）"], "answer": "空缺、空房", "explain": "vacancy（n. 空缺（職缺）；空房；空位）＝ 空缺（職缺）；空房；空位。vac = 空。vacancy 是「空缺的職位／空房」，vacation 是「放假」。"}, {"type": "B", "cat": "中譯英", "word": "inspect", "n": 1, "q": "「檢查、察看」對應的英文單字是？", "options": ["suspect", "respect", "expect", "inspect"], "answer": "inspect", "explain": "答案是 <b>inspect</b>（v. 檢查、察看；調查）。-spect- = 看。in- 表示「往裡頭」，往裡仔細看就是檢查。"}, {"type": "B", "cat": "中譯英", "word": "appreciate", "n": 2, "q": "「感激」對應的英文單字是？", "options": ["depreciate", "evaluate", "appreciate", "devalue"], "answer": "appreciate", "explain": "答案是 <b>appreciate</b>（v. 感激；欣賞；體會到；使增值）。-preci- = 價值。ap- 是「朝向／加強」，把價值收進心裡就是 appreciate。"}, {"type": "B", "cat": "中譯英", "word": "predict", "n": 3, "q": "「預測」對應的英文單字是？", "options": ["expect", "foresee", "forecast", "predict"], "answer": "predict", "explain": "答案是 <b>predict</b>（v. 預測；預言）。-dict- = 說。pre- = 事先，「事先說出口」＝預測。"}, {"type": "B", "cat": "中譯英", "word": "bankruptcy", "n": 4, "q": "「破產」對應的英文單字是？", "options": ["bankruptcy", "erupt", "broke", "interrupt"], "answer": "bankruptcy", "explain": "答案是 <b>bankruptcy</b>（n. 破產（adj. bankrupt；片語 go bankrupt））。bank（銀行）＋ rupt（破裂）＝「銀行都破了」→ 破產。"}, {"type": "B", "cat": "中譯英", "word": "fluent", "n": 5, "q": "「流利的」對應的英文單字是？", "options": ["influenza", "fluent", "affluent", "fluid"], "answer": "fluent", "explain": "答案是 <b>fluent</b>（adj. 流利的；（言語）流暢的）。flu = 流。話「流」得出來、不卡頓，就是流利。"}, {"type": "B", "cat": "中譯英", "word": "enlighten", "n": 6, "q": "「啟發」對應的英文單字是？", "options": ["lighten", "enlighten", "delight", "plight"], "answer": "enlighten", "explain": "答案是 <b>enlighten</b>（v. 啟發；使明瞭；教育）。en- = 「使…」，light = 光，「使它有光」＝使明瞭。"}, {"type": "B", "cat": "中譯英", "word": "imminent", "n": 7, "q": "「即將發生的」對應的英文單字是？", "options": ["imminent", "pending", "eminent", "prominent"], "answer": "imminent", "explain": "答案是 <b>imminent</b>（adj. 即將發生的；逼近的）。-pend- = 懸掛。im- + min 表示「已伸到眼前」→ 即將發生。"}, {"type": "B", "cat": "中譯英", "word": "stationery", "n": 8, "q": "「文具」對應的英文單字是？", "options": ["stationery", "static", "stationary", "station"], "answer": "stationery", "explain": "答案是 <b>stationery</b>（n. 文具；信紙（辦公用品）；adj. 文具的）。station（站）＋ -ery（賣東西的地方）＝ 文具；stationary 才是「不動的」。"}, {"type": "B", "cat": "中譯英", "word": "resist", "n": 9, "q": "「抵抗」對應的英文單字是？", "options": ["persist", "assist", "insist", "resist"], "answer": "resist", "explain": "答案是 <b>resist</b>（v. 抵抗；抵制；忍住）。re- = 往對面，sist = 站。站在對面擋住 → 抵抗。"}, {"type": "B", "cat": "中譯英", "word": "descendant", "n": 10, "q": "「子孫、後代」對應的英文單字是？", "options": ["ancestor", "descend", "descendant", "offspring"], "answer": "descendant", "explain": "答案是 <b>descendant</b>（n. 子孫、後代；（adj.）下降的）。de- = 往下，scand = 爬。子孫一代一代「往下」傳 → 後代。"}, {"type": "B", "cat": "中譯英", "word": "inhabit", "n": 11, "q": "「居住於」對應的英文單字是？", "options": ["habitat", "habit", "inhabit", "inhibit"], "answer": "inhabit", "explain": "答案是 <b>inhabit</b>（v. 居住於；棲息於；占據（空間））。in- = 在裡面，habit = 住，「住在裡面」＝ inhabit。"}, {"type": "B", "cat": "中譯英", "word": "contemporary", "n": 12, "q": "「當代的」對應的英文單字是？", "options": ["temporary", "contemporary", "chronology", "permanent"], "answer": "contemporary", "explain": "答案是 <b>contemporary</b>（adj. 當代的；同時代的；n. 同時代的人）。con- = 共同，tempor = 時間，「同一時間」＝當代的。"}, {"type": "B", "cat": "中譯英", "word": "literacy", "n": 13, "q": "「識字」對應的英文單字是？", "options": ["illiterate", "numeracy", "literate", "literacy"], "answer": "literacy", "explain": "答案是 <b>literacy</b>（n. 識字；讀寫能力；識字率）。liter = 文字，-acy = 「…的能力」→ 識字能力。"}, {"type": "B", "cat": "中譯英", "word": "accelerate", "n": 14, "q": "「加速」對應的英文單字是？", "options": ["decelerate", "celerity", "expedite", "accelerate"], "answer": "accelerate", "explain": "答案是 <b>accelerate</b>（v. 加速；使加快；促進）。ac- = 加強，celer = 快，「讓它更快」＝加速。"}, {"type": "B", "cat": "中譯英", "word": "vacancy", "n": 15, "q": "「空缺（職缺）」對應的英文單字是？", "options": ["vocation", "vacancy", "vacant", "vacation"], "answer": "vacancy", "explain": "答案是 <b>vacancy</b>（n. 空缺（職缺）；空房；空位）。vac = 空。vacancy 是「空缺的職位／空房」，vacation 是「放假」。"}, {"type": "C", "cat": "字根配對", "word": "inspect", "n": 1, "q": "字根 <b>-spect-</b>（看）可以推得下列哪個單字？", "options": ["appreciate", "predict", "inspect", "bankruptcy"], "answer": "inspect", "explain": "-spect- = 看。in-(向內) + spect(看)；另加 -or 即 inspector（查察員、檢查員） → <b>inspect</b>：檢查、察看；調查"}, {"type": "C", "cat": "字根配對", "word": "appreciate", "n": 2, "q": "字根 <b>-preci-</b>（價值）可以推得下列哪個單字？", "options": ["predict", "inspect", "bankruptcy", "appreciate"], "answer": "appreciate", "explain": "-preci- = 價值。ap-(加強語意) + preci(價值) + -ate(動詞後綴) → <b>appreciate</b>：感激；欣賞；體會到；使增值"}, {"type": "C", "cat": "字根配對", "word": "predict", "n": 3, "q": "字根 <b>-dict-</b>（說）可以推得下列哪個單字？", "options": ["predict", "appreciate", "inspect", "bankruptcy"], "answer": "predict", "explain": "-dict- = 說。pre-(預先) + dict(說) + -t(動詞後綴) → <b>predict</b>：預測；預言"}, {"type": "C", "cat": "字根配對", "word": "bankruptcy", "n": 4, "q": "字根 <b>-rupt-</b>（破裂）可以推得下列哪個單字？", "options": ["appreciate", "inspect", "predict", "bankruptcy"], "answer": "bankruptcy", "explain": "-rupt- = 破裂。bank(銀行) + rupt(破裂) + -cy(名詞後綴) →「銀行破了」 → <b>bankruptcy</b>：破產；破產的"}, {"type": "C", "cat": "字根配對", "word": "fluent", "n": 5, "q": "字根 <b>-flu-</b>（流動）可以推得下列哪個單字？", "options": ["inspect", "fluent", "appreciate", "predict"], "answer": "fluent", "explain": "-flu- = 流動。flu(流) + -ent(形容詞後綴) → <b>fluent</b>：流利的；（言語）流暢的"}, {"type": "C", "cat": "字根配對", "word": "enlighten", "n": 6, "q": "字根 <b>-light-</b>（光）可以推得下列哪個單字？", "options": ["appreciate", "enlighten", "predict", "inspect"], "answer": "enlighten", "explain": "-light- = 光。en-(使…) + light(光) + -en(動詞後綴) → <b>enlighten</b>：啟發；使明瞭；教育"}, {"type": "C", "cat": "字根配對", "word": "imminent", "n": 7, "q": "字根 <b>-pend-</b>（懸掛）可以推得下列哪個單字？", "options": ["inspect", "appreciate", "imminent", "predict"], "answer": "imminent", "explain": "-pend- = 懸掛。im-(向內) + min(突出、伸) + -ent(形容詞後綴) → <b>imminent</b>：即將發生的；逼近的"}, {"type": "C", "cat": "字根配對", "word": "stationery", "n": 8, "q": "字根 <b>-sta-</b>（站）可以推得下列哪個單字？", "options": ["predict", "inspect", "stationery", "appreciate"], "answer": "stationery", "explain": "-sta- = 站。station(站) + -ery(場所、場所相關之物) →「攤位上賣的東西」 → <b>stationery</b>：文具；信紙（辦公用品）；文具的"}, {"type": "C", "cat": "字根配對", "word": "resist", "n": 9, "q": "字根 <b>-sist-</b>（站）可以推得下列哪個單字？", "options": ["inspect", "appreciate", "predict", "resist"], "answer": "resist", "explain": "-sist- = 站。re-(回、往對面) + sist(站) →「站在對面擋住」 → <b>resist</b>：抵抗；抵制；忍住（-resist doing sth.）"}, {"type": "C", "cat": "字根配對", "word": "descendant", "n": 10, "q": "字根 <b>-scend-</b>（爬）可以推得下列哪個單字？", "options": ["inspect", "descendant", "appreciate", "predict"], "answer": "descendant", "explain": "-scend- = 爬。de-(向下) + scand(爬) + -ant(名詞後綴) → <b>descendant</b>：子孫、後代；下降的"}, {"type": "C", "cat": "字根配對", "word": "inhabit", "n": 11, "q": "字根 <b>-habit-</b>（居住）可以推得下列哪個單字？", "options": ["inhabit", "inspect", "predict", "appreciate"], "answer": "inhabit", "explain": "-habit- = 居住。in-(在…內) + habit(居住) →「住在裡面」 → <b>inhabit</b>：居住於；棲息於；占據（空間）"}, {"type": "C", "cat": "字根配對", "word": "contemporary", "n": 12, "q": "字根 <b>-tempor-</b>（時間）可以推得下列哪個單字？", "options": ["inspect", "contemporary", "appreciate", "predict"], "answer": "contemporary", "explain": "-tempor- = 時間。con-(共同) + tempor(時間) + -ary(形容詞/名詞後綴) → <b>contemporary</b>：當代的；同時代的；同時代的人"}, {"type": "D", "cat": "字根補字", "word": "inspect", "n": 1, "input": true, "q": "字根 <b>-spect-</b>（看）＋「檢查、察看」→ 請拼出完整單字（共 7 個字母）", "options": null, "answer": "inspect", "explain": "答案：<b>inspect</b>（/ɪnˈspekt/）。in-(向內) + spect(看)；另加 -or 即 inspector（查察員、檢查員）。-spect- = 看。in- 表示「往裡頭」，往裡仔細看就是檢查。"}, {"type": "D", "cat": "字根補字", "word": "appreciate", "n": 2, "input": true, "q": "字根 <b>-preci-</b>（價值）＋「感激」→ 請拼出完整單字（共 10 個字母）", "options": null, "answer": "appreciate", "explain": "答案：<b>appreciate</b>（/əˈpriːʃieɪt/）。ap-(加強語意) + preci(價值) + -ate(動詞後綴)。-preci- = 價值。ap- 是「朝向／加強」，把價值收進心裡就是 appreciate。"}, {"type": "D", "cat": "字根補字", "word": "predict", "n": 3, "input": true, "q": "字根 <b>-dict-</b>（說）＋「預測」→ 請拼出完整單字（共 7 個字母）", "options": null, "answer": "predict", "explain": "答案：<b>predict</b>（/prɪˈdɪkt/）。pre-(預先) + dict(說) + -t(動詞後綴)。-dict- = 說。pre- = 事先，「事先說出口」＝預測。"}, {"type": "D", "cat": "字根補字", "word": "bankruptcy", "n": 4, "input": true, "q": "字根 <b>-rupt-</b>（破裂）＋「破產」→ 請拼出完整單字（共 10 個字母）", "options": null, "answer": "bankruptcy", "explain": "答案：<b>bankruptcy</b>（/ˈbæŋkrʌpsi/）。bank(銀行) + rupt(破裂) + -cy(名詞後綴) →「銀行破了」。bank（銀行）＋ rupt（破裂）＝「銀行都破了」→ 破產。"}, {"type": "D", "cat": "字根補字", "word": "fluent", "n": 5, "input": true, "q": "字根 <b>-flu-</b>（流動）＋「流利的」→ 請拼出完整單字（共 6 個字母）", "options": null, "answer": "fluent", "explain": "答案：<b>fluent</b>（/ˈfluːənt/）。flu(流) + -ent(形容詞後綴)。flu = 流。話「流」得出來、不卡頓，就是流利。"}, {"type": "D", "cat": "字根補字", "word": "enlighten", "n": 6, "input": true, "q": "字根 <b>-light-</b>（光）＋「啟發」→ 請拼出完整單字（共 9 個字母）", "options": null, "answer": "enlighten", "explain": "答案：<b>enlighten</b>（/ɪnˈlaɪtn/）。en-(使…) + light(光) + -en(動詞後綴)。en- = 「使…」，light = 光，「使它有光」＝使明瞭。"}, {"type": "D", "cat": "字根補字", "word": "imminent", "n": 7, "input": true, "q": "字根 <b>-pend-</b>（懸掛）＋「即將發生的」→ 請拼出完整單字（共 8 個字母）", "options": null, "answer": "imminent", "explain": "答案：<b>imminent</b>（/ˈɪmɪnənt/）。im-(向內) + min(突出、伸) + -ent(形容詞後綴)。-pend- = 懸掛。im- + min 表示「已伸到眼前」→ 即將發生。"}, {"type": "D", "cat": "字根補字", "word": "stationery", "n": 8, "input": true, "q": "字根 <b>-sta-</b>（站）＋「文具」→ 請拼出完整單字（共 10 個字母）", "options": null, "answer": "stationery", "explain": "答案：<b>stationery</b>（/ˈsteɪʃəneri/）。station(站) + -ery(場所、場所相關之物) →「攤位上賣的東西」。station（站）＋ -ery（賣東西的地方）＝ 文具；stationary 才是「不動的」。"}, {"type": "D", "cat": "字根補字", "word": "resist", "n": 9, "input": true, "q": "字根 <b>-sist-</b>（站）＋「抵抗」→ 請拼出完整單字（共 6 個字母）", "options": null, "answer": "resist", "explain": "答案：<b>resist</b>（/rɪˈzɪst/）。re-(回、往對面) + sist(站) →「站在對面擋住」。re- = 往對面，sist = 站。站在對面擋住 → 抵抗。"}, {"type": "D", "cat": "字根補字", "word": "descendant", "n": 10, "input": true, "q": "字根 <b>-scend-</b>（爬）＋「子孫、後代」→ 請拼出完整單字（共 10 個字母）", "options": null, "answer": "descendant", "explain": "答案：<b>descendant</b>（/dɪˈsendənt/）。de-(向下) + scand(爬) + -ant(名詞後綴)。de- = 往下，scand = 爬。子孫一代一代「往下」傳 → 後代。"}, {"type": "D", "cat": "字根補字", "word": "inhabit", "n": 11, "input": true, "q": "字根 <b>-habit-</b>（居住）＋「居住於」→ 請拼出完整單字（共 7 個字母）", "options": null, "answer": "inhabit", "explain": "答案：<b>inhabit</b>（/ɪnˈhæbɪt/）。in-(在…內) + habit(居住) →「住在裡面」。in- = 在裡面，habit = 住，「住在裡面」＝ inhabit。"}, {"type": "D", "cat": "字根補字", "word": "contemporary", "n": 12, "input": true, "q": "字根 <b>-tempor-</b>（時間）＋「當代的」→ 請拼出完整單字（共 12 個字母）", "options": null, "answer": "contemporary", "explain": "答案：<b>contemporary</b>（/kənˈtemprəri/）。con-(共同) + tempor(時間) + -ary(形容詞/名詞後綴)。con- = 共同，tempor = 時間，「同一時間」＝當代的。"}, {"type": "E", "cat": "易混淆字", "word": "stationary", "n": 8, "q": "The train remained ______ at the platform because of the signal was red.", "options": ["station", "stationery", "stationary", "statue"], "answer": "stationary", "explain": "stationary = 靜止不動的；stationery = 文具；station = 車站。字尾 -ary 是形容詞、-ery 是名詞「場所」。"}, {"type": "E", "cat": "易混淆字", "word": "imminent", "n": 7, "q": "A decision on the new policy is ______, so please wait for the announcement.", "options": ["prominent", "eminent", "imminent", "pending"], "answer": "imminent", "explain": "imminent = 即將發生的（時間逼近）；eminent = 傑出的；prominent = 突出的、著名的；pending = 尚待決定的。"}, {"type": "E", "cat": "易混淆字", "word": "temporary", "n": 12, "q": "The sign says “Parking ______ for customers only.”", "options": ["contemporary", "temporary", "chronic", "permanent"], "answer": "temporary", "explain": "temporary = 暫時的；contemporary = 當代的（con- ＝共同、同時代）。兩個字只差一個 co-。"}, {"type": "E", "cat": "易混淆字", "word": "vacation", "n": 15, "q": "She booked a two-week ______ to travel around Asia.", "options": ["vocation", "vacation", "vacancy", "vacant"], "answer": "vacation", "explain": "vacation = 假期；vacancy = 空缺／空房；vocation = 職業、志業；vacant = 空著的（形容詞）。"}, {"type": "E", "cat": "易混淆字", "word": "descend", "n": 10, "q": "Because of the storm, the plane began to ______ to a lower altitude.", "options": ["descend", "transcend", "descendant", "ascend"], "answer": "descend", "explain": "descend = 下降；ascend = 上升；transcend = 超越；descendant = 後代（名詞）。"}, {"type": "E", "cat": "易混淆字", "word": "inhabit", "n": 11, "q": "Polar bears ______ the Arctic region for most of the year.", "options": ["inhibit", "habituate", "inhabit", "exhibit"], "answer": "inhabit", "explain": "inhabit = 居住於、棲息於；inhibit = 抑制；habituate = 使習慣於。"}, {"type": "E", "cat": "易混淆字", "word": "fluent", "n": 5, "q": "She is quite ______ in English and can negotiate without an interpreter.", "options": ["influenza", "affluent", "fluid", "fluent"], "answer": "fluent", "explain": "fluent = 流利的（說話）；fluid = 流體的；affluent = 富裕的；influenza = 流感。"}, {"type": "E", "cat": "易混淆字", "word": "insisted", "n": 9, "q": "I ______ on paying for the meal — it was my treat.", "options": ["assisted", "insisted", "resisted", "persisted"], "answer": "insisted", "explain": "insist = 堅持；resist = 抵抗；assist = 協助；persist = 堅持不懈（多與 with／in 連用）。"}, {"type": "E", "cat": "易混淆字", "word": "bankrupt", "n": 4, "q": "The factory was ______ after the bank refused to renew its loan.", "options": ["corrupted", "interrupted", "erupted", "bankrupt"], "answer": "bankrupt", "explain": "go bankrupt = 破產；erupt = 爆發（火山、爭端）；interrupt = 打斷；corrupt = 貪汙、腐化。"}, {"type": "E", "cat": "易混淆字", "word": "depreciation", "n": 2, "q": "The company reported a sharp ______ in the value of its assets.", "options": ["inspection", "prediction", "depreciation", "appreciation"], "answer": "depreciation", "explain": "depreciation = 貶值（de- 往下）；appreciation = 增值、感激；prediction = 預測；inspection = 檢查。"}, {"type": "E", "cat": "易混淆字", "word": "inspect", "n": 1, "q": "Customs officers may ______ your luggage before the flight.", "options": ["suspect", "inspect", "expect", "respect"], "answer": "inspect", "explain": "inspect = 檢查；respect = 尊敬；suspect = 懷疑；expect = 期望。"}, {"type": "E", "cat": "易混淆字", "word": "enlightening", "n": 6, "q": "The lecture on climate policy was extremely ______; I learned a lot.", "options": ["enlightening", "lightening", "plight", "delighting"], "answer": "enlightening", "explain": "enlightening = 使人明瞭的（enlighten 的現在分詞／形容詞）；lightening = 減輕；plight = 困境；delight = 欣喜。"}, {"type": "E", "cat": "易混淆字", "word": "literacy", "n": 13, "q": "The adult education program aims to improve functional ______ in rural communities.", "options": ["illiteracy", "numeracy", "literature", "literacy"], "answer": "literacy", "explain": "literacy = 識字、讀寫能力；literature = 文學；numeracy = 計算能力；illiteracy = 不識字。注意這題不是「計算」能力。"}, {"type": "E", "cat": "易混淆字", "word": "accelerate", "n": 14, "q": "The factory installed new software to speed up the process and ______ output.", "options": ["celery", "accelerate", "decelerate", "expedite"], "answer": "accelerate", "explain": "accelerate = 加速；decelerate = 減速；expedite = 加快處理（公文／流程）；celerity 是名詞「快速」。"}, {"type": "F", "cat": "例句填空", "word": "inspect", "n": 1, "q": "完成句子：<br><i>Customs officers may ______ your luggage at the airport.</i><br><span class=\"zh\">（海關人員可能在機場查驗你的行李。）</span>", "options": ["inspect", "suspect", "expect", "respect"], "answer": "inspect", "explain": "答案：<b>inspect</b>。-spect- = 看。in- 表示「往裡頭」，往裡仔細看就是檢查。"}, {"type": "F", "cat": "例句填空", "word": "appreciate", "n": 2, "q": "完成句子：<br><i>I would ______ it if you could reply by Friday.</i><br><span class=\"zh\">（若您能在週五前回覆，我將不胜感激。）</span>", "options": ["devalue", "appreciate", "evaluate", "depreciate"], "answer": "appreciate", "explain": "答案：<b>appreciate</b>。-preci- = 價值。ap- 是「朝向／加強」，把價值收進心裡就是 appreciate。"}, {"type": "F", "cat": "例句填空", "word": "predict", "n": 3, "q": "完成句子：<br><i>No one can ______ how the market will react.</i><br><span class=\"zh\">（沒有人能預測市場會如何反應。）</span>", "options": ["forecast", "expect", "foresee", "predict"], "answer": "predict", "explain": "答案：<b>predict</b>。-dict- = 說。pre- = 事先，「事先說出口」＝預測。"}, {"type": "F", "cat": "例句填空", "word": "bankruptcy", "n": 4, "q": "完成句子：<br><i>The company's ______ sent shock waves through the whole industry.</i><br><span class=\"zh\">（該公司的破產在整個業界引起震盪。）</span>", "options": ["bankruptcy", "erupt", "interrupt", "broke"], "answer": "bankruptcy", "explain": "答案：<b>bankruptcy</b>。bank（銀行）＋ rupt（破裂）＝「銀行都破了」→ 破產。"}, {"type": "F", "cat": "例句填空", "word": "fluent", "n": 5, "q": "完成句子：<br><i>She is ______ in English and Japanese.</i><br><span class=\"zh\">（她的英語和日語都很流利。）</span>", "options": ["influenza", "affluent", "fluent", "fluid"], "answer": "fluent", "explain": "答案：<b>fluent</b>。flu = 流。話「流」得出來、不卡頓，就是流利。"}, {"type": "F", "cat": "例句填空", "word": "enlighten", "n": 6, "q": "完成句子：<br><i>The lecture ______ me on the causes of the war.</i><br><span class=\"zh\">（那場演講讓我對戰爭的成因茅塞頓開。）</span>", "options": ["lighten", "plight", "delight", "enlighten"], "answer": "enlighten", "explain": "答案：<b>enlighten</b>。en- = 「使…」，light = 光，「使它有光」＝使明瞭。"}, {"type": "F", "cat": "例句填空", "word": "imminent", "n": 7, "q": "完成句子：<br><i>A decision on the new policy is ______, so please wait.</i><br><span class=\"zh\">（新政策的決定即將出台，請稍候。）</span>", "options": ["pending", "imminent", "eminent", "prominent"], "answer": "imminent", "explain": "答案：<b>imminent</b>。-pend- = 懸掛。im- + min 表示「已伸到眼前」→ 即將發生。"}, {"type": "F", "cat": "例句填空", "word": "stationery", "n": 8, "q": "完成句子：<br><i>Please order the ______ by Friday.</i><br><span class=\"zh\">（請在週五前訂購文具用品。）</span>", "options": ["static", "stationery", "station", "stationary"], "answer": "stationery", "explain": "答案：<b>stationery</b>。station（站）＋ -ery（賣東西的地方）＝ 文具；stationary 才是「不動的」。"}, {"type": "F", "cat": "例句填空", "word": "resist", "n": 9, "q": "完成句子：<br><i>This new alloy ______ high temperatures.</i><br><span class=\"zh\">（這種新合金耐得住高溫。）</span>", "options": ["persist", "resist", "assist", "insist"], "answer": "resist", "explain": "答案：<b>resist</b>。re- = 往對面，sist = 站。站在對面擋住 → 抵抗。"}, {"type": "F", "cat": "例句填空", "word": "descendant", "n": 10, "q": "完成句子：<br><i>Their ______ still live in this village.</i><br><span class=\"zh\">（他們的後代至今仍住在這個村莊。）</span>", "options": ["offspring", "ancestor", "descend", "descendant"], "answer": "descendant", "explain": "答案：<b>descendant</b>。de- = 往下，scand = 爬。子孫一代一代「往下」傳 → 後代。"}, {"type": "G", "cat": "拼字挑戰", "word": "inhabit", "n": 11, "input": true, "q": "「居住於」<br>字根：<b>-habit-</b>（居住）<br>首字母：<b>i</b>　共 7 個字母", "options": null, "answer": "inhabit", "explain": "答案：<b>inhabit</b>（/ɪnˈhæbɪt/）＝ 居住於；棲息於；占據（空間）。in- = 在裡面，habit = 住，「住在裡面」＝ inhabit。"}, {"type": "G", "cat": "拼字挑戰", "word": "contemporary", "n": 12, "input": true, "q": "「當代的」<br>字根：<b>-tempor-</b>（時間）<br>首字母：<b>c</b>　共 12 個字母", "options": null, "answer": "contemporary", "explain": "答案：<b>contemporary</b>（/kənˈtemprəri/）＝ 當代的；同時代的；同時代的人。con- = 共同，tempor = 時間，「同一時間」＝當代的。"}, {"type": "G", "cat": "拼字挑戰", "word": "literacy", "n": 13, "input": true, "q": "「識字」<br>字根：<b>-liter-</b>（文字）<br>首字母：<b>l</b>　共 8 個字母", "options": null, "answer": "literacy", "explain": "答案：<b>literacy</b>（/ˈlɪtərəsi/）＝ 識字；讀寫能力；識字率。liter = 文字，-acy = 「…的能力」→ 識字能力。"}, {"type": "G", "cat": "拼字挑戰", "word": "accelerate", "n": 14, "input": true, "q": "「加速」<br>字根：<b>-celer-</b>（快速）<br>首字母：<b>a</b>　共 10 個字母", "options": null, "answer": "accelerate", "explain": "答案：<b>accelerate</b>（/əkˈseləreɪt/）＝ 加速；使加快；促進。ac- = 加強，celer = 快，「讓它更快」＝加速。"}, {"type": "G", "cat": "拼字挑戰", "word": "vacancy", "n": 15, "input": true, "q": "「空缺（職缺）」<br>字根：<b>-vac-</b>（空）<br>首字母：<b>v</b>　共 7 個字母", "options": null, "answer": "vacancy", "explain": "答案：<b>vacancy</b>（/ˈveɪkənsi/）＝ 空缺（職缺）；空房；空位。vac = 空。vacancy 是「空缺的職位／空房」，vacation 是「放假」。"}];
+const STORE='vocab15_progress';
+const META='vocab15_meta';
+let mode='all', idx=0, answers=[], showAns=false, done=false;
+
+const $=s=>document.querySelector(s);
+const el=t=>document.createElement(t);
+function load(){
+  try{ const s=JSON.parse(localStorage.getItem(STORE)||'{}');
+    answers=s.answers||[]; idx=s.idx||0; mode=s.mode||'all';
+  }catch(e){ answers=[]; idx=0; mode='all'; }
+  try{ const m=JSON.parse(localStorage.getItem(META)||'{}'); $('#sname').value=m.name||''; $('#sseat').value=m.seat||''; }
+  catch(e){}
+}
+function save(){
+  localStorage.setItem(STORE,JSON.stringify({answers,idx,mode,ts:Date.now()}));
+  localStorage.setItem(META,JSON.stringify({name:$('#sname').value,seat:$('#sseat').value}));
+}
+
+
+function visible(){
+  if(mode==='wrong') return Q.map((q,i)=>({q,i})).filter(x=>answers[x.i]&&!answers[x.i].ok);
+  return Q.map((q,i)=>({q,i}));
+}
+function stats(){
+  let c=0,r=0; answers.forEach(a=>{ if(a){c++; if(a.ok)r++;} });
+  return {c,r,t:Q.length};
+}
+function byType(){
+  const m={};
+  Q.forEach((q,i)=>{ if(!m[q.type]) m[q.type]={ok:0,tot:0,cat:q.cat};
+    m[q.type].tot++; if(answers[i]&&answers[i].ok) m[q.type].ok++; });
+  return m;
+}
+function render(){
+  const list=visible();
+  document.body.classList.toggle('showpaper', mode==='paper');
+  if(mode==='paper'){ $('#main').innerHTML=''; updateBar(); return; }
+  $('#main').innerHTML='';
+  if(mode==='wrong'&&list.length===0){
+    $('#main').innerHTML='<div class="card result"><div class="score">✓</div><div class="sub">目前沒有錯題，全部答對了！</div>'
+      +'<button onclick="resetAll()">重新作答</button></div>';
+    updateBar(); return;
+  }
+  if(idx>=list.length){ showResult(list); return; }
+  const {q,i}=list[idx];
+  const card=el('div'); card.className='card';
+  const doneA=answers[i];
+  /* 錯題模式下，已答錯的題目可以再作答一次；答對後會自動從錯題清單移除 */
+  const retry = !!(doneA && !doneA.ok && mode==='wrong');
+  let html='<div class="qtype">'+q.type+' · '+q.cat+'<small>題號 '+(idx+1)+' / '+list.length+'</small></div>'
+    +'<div class="qtext">'+q.q+'</div>'
+    +(retry?'<div class="hint" style="margin:-6px 0 12px">↻ 這題上次答錯了，再試一次。答對後會自動從錯題清單移除。</div>':'');
+  if(q.options){
+    html+='<div class="opts">';
+    q.options.forEach((o,k)=>{ html+='<div class="opt" data-o="'+o+'" data-k="'+'ABCD'[k]+'"><span class="k">'+'ABCD'[k]+'</span><span>'+o+'</span></div>'; });
+    html+='</div>';
+  } else {
+    html+='<input type="text" id="inp" placeholder="在此輸入英文單字" autocomplete="off" spellcheck="false">';
+  }
+  html+='<div class="fb" id="fb"></div>';
+  html+='<div class="nav"><button id="check">送出答案</button><button class="ghost" id="prev">上一題</button>'
+    +'<button class="ghost" id="next">下一題</button><span class="spacer"></span><span class="hint">Enter 送出 · ← → 切題</span></div>';
+  card.innerHTML=html; $('#main').appendChild(card);
+
+  if(doneA && !retry){ paint(q,i,doneA); $('#check').disabled=true; }
+  $('#check').onclick=()=>submit(q,i);
+  $('#prev').onclick=()=>{ if(idx>0){idx--;render();save();} };
+  $('#next').onclick=()=>{ if(idx<list.length-1){idx++;render();save();} else {showResult(list);} };
+  const inp=$('#inp');
+  if(inp){
+    inp.onkeydown=e=>{ if(e.key==='Enter') submit(q,i); };
+    inp.oninput=()=>{ $('#check').disabled=!inp.value.trim(); };
+    if(!doneA || retry) $('#check').disabled=true;
+    setTimeout(()=>inp.focus(),30);
+  }
+  document.querySelectorAll('.opt').forEach(o=>o.onclick=()=>{
+    if(answers[i] && !retry) return;
+    document.querySelectorAll('.opt').forEach(x=>x.classList.remove('sel'));
+    o.classList.add('sel'); $('#check').disabled=false;
+  });
+  updateBar();
+}
+
+function submit(q,i){
+  if(answers[i] && !(mode==='wrong' && !answers[i].ok)) return;
+  let ok=false, chosen=null;
+  if(q.options){
+    const sel=document.querySelector('.opt.sel'); if(!sel) return;
+    chosen=sel.dataset.o; ok=(chosen===q.answer);
+  } else {
+    const inp=$('#inp'); if(!inp) return;
+    chosen=inp.value.trim(); ok=(chosen.toLowerCase()===q.answer.toLowerCase());
+  }
+  answers[i]={ok:ok,chosen:chosen};
+  save(); paint(q,i,answers[i]); updateBar();
+  setTimeout(()=>advanceAfter(i),3200);
+}
+
+/* 前往下一個「尚未作答或已答錯」的題目；錯題模式下清單會變動，故重新定位 */
+function advanceAfter(answeredIdx){
+  const list=visible();
+  if(list.length===0){ showResult(list); return; }
+  let pos=list.findIndex(x=>x.i>answeredIdx);
+  if(pos===-1) pos=list.length-1;
+  idx=pos; render(); save();
+}
+
+function paint(q,i,a){
+  if(q.options){
+    document.querySelectorAll('.opt').forEach(o=>{
+      o.classList.add('lock');
+      if(o.dataset.o===q.answer) o.classList.add('right');
+      else if(o.dataset.o===a.chosen) o.classList.add('wrong');
+    });
+  }
+  const fb=$('#fb');
+  fb.className='fb show '+(a.ok?'ok':'no');
+  fb.innerHTML='<div class="hd">'+(a.ok?'✓ 答對了！':'✗ 正確答案是 「'+q.answer+'」')+'</div>'+q.explain;
+}
+
+function showResult(list){
+  const s=stats();
+  const pct=Math.round(s.r/Q.length*100);
+  let msg = pct>=90?'太強了！這 15 個字根你已經收進腦袋。' : pct>=70?'不錯！錯題再練一次就能全對。' : '別急，回到講義看「拆解」欄，把字根邏輯記牢。';
+  const wrongs=Q.map((q,i)=>({q,i})).filter(x=>answers[x.i]&&!answers[x.i].ok);
+  const bt=byType();
+  let rows='';
+  for(const k of Object.keys(bt).sort()){
+    const b=bt[k];
+    rows+='<tr><td>'+k+'</td><td>'+b.cat+'</td><td>'+b.ok+' / '+b.tot+'</td><td>'
+      +'<div class="mini"><i style="width:'+Math.round(b.ok/b.tot*100)+'%"></i></div></td></tr>';
+  }
+  const code=resultCode();
+  const nm=$('#sname').value.trim(), st=$('#sseat').value.trim();
+  const report='字根單字15講 成績｜姓名:'+(nm||'未填')+'｜座號:'+(st||'未填')
+    +'｜得分:'+s.r+'/'+Q.length+'（'+pct+'%）｜結果碼:'+code;
+  $('#main').innerHTML='<div class="card result">'
+    +'<div class="score">'+s.r+' / '+Q.length+'</div>'
+    +'<div class="sub">正確率 '+pct+'%　'+msg+'</div>'
+    +'<div class="nav" style="justify-content:center">'
+    +'<button onclick="goWrong()">只練錯題 ('+wrongs.length+')</button>'
+    +'<button class="ghost" onclick="goAll()">全部重做</button>'
+    +'<button class="ghost" onclick="goPaper()">紙本題目卷</button>'
+    +'</div>'
+    +'<h3 style="text-align:left;margin-top:26px">各題型得分</h3>'
+    +'<table><thead><tr><th>型</th><th>題型</th><th>答對</th><th></th></tr></thead><tbody>'+rows+'</tbody></table>'
+    +'<h3 style="text-align:left;margin-top:22px">把成績交給老師</h3>'
+    +'<div class="hint" style="margin-bottom:8px">按下面按鈕複製整段文字，貼到 LINE 老師或老師指定的表單。老師貼進「成績統計工具」就能看到全班平均與最薄弱的單字。</div>'
+    +'<div class="nav"><button onclick="copyReport()">複製成績</button><button class="ghost" onclick="showCode()">顯示結果碼</button></div>'
+    +'<textarea id="rep" readonly style="width:100%;min-height:88px;margin-top:10px;border:1px solid var(--line);border-radius:8px;padding:10px;font-family:ui-monospace,Menlo,monospace;font-size:12.5px;display:none">'+report.replace(/</g,'&lt;')+'</textarea>'
+    +(wrongs.length?'<h3 style="text-align:left">錯題清單（'+wrongs.length+' 題）</h3>'
+      +'<div class="wronglist">'+wrongs.map(x=>'<div><b>'+x.q.type+'</b> '+stripTags(x.q.q)
+      +'<br>→ 正確答案：<b>'+x.q.answer+'</b></div>').join('')+'</div>':'')
+    +'</div>';
+  updateBar();
+}
+
+/* 把每題對錯壓成一串位元 → base64url，老師端可還原成逐題明細 */
+function resultCode(){
+  const bits=Q.map((q,i)=> (answers[i]&&answers[i].ok)?'1':'0').join('');
+  const bytes=[];
+  for(let i=0;i<bits.length;i+=8){
+    let b=0;
+    for(let j=0;j<8;j++){ b=(b<<1)|((bits[i+j]==='1')?1:0); }
+    bytes.push(b);
+  }
+  const b64=btoa(String.fromCharCode.apply(null,bytes)).replace(/=+$/,'').replace(/\+/g,'-').replace(/\//g,'_');
+  const s=stats();
+  return 'V1-'+b64+'-'+s.r+'-'+s.c+'-'+Q.length;
+}
+function copyReport(){
+  const ta=$('#rep'); ta.style.display='block'; ta.select(); ta.setSelectionRange(0,99999);
+  let ok=false;
+  try{ ok=document.execCommand('copy'); }catch(e){}
+  if(!ok && navigator.clipboard){ navigator.clipboard.writeText(ta.value).then(()=>toast('已複製到剪貼簿')); return; }
+  toast(ok?'已複製到剪貼簿！請貼給老師':'請手動選取上方文字複製');
+}
+function showCode(){ const ta=$('#rep'); ta.style.display='block'; ta.select(); ta.setSelectionRange(0,99999); toast('已選取，請按 Ctrl／⌘ + C 複製'); }
+function toast(msg){ let t=$('#toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2200); }
+
+function stripTags(s){ const d=document.createElement('div'); d.innerHTML=s; return d.textContent; }
+
+function goWrong(){ mode='wrong'; idx=0; render(); save(); syncTabs(); }
+function goPaper(){ mode='paper'; render(); syncTabs(); window.scrollTo(0,0); }
+function goAll(){ mode='all'; idx=0; render(); save(); syncTabs(); }
+function resetAll(){ answers=[]; idx=0; mode='all'; localStorage.removeItem(STORE); render(); save(); syncTabs(); }
+
+function updateBar(){
+  const s=stats();
+  $('#sc').textContent=s.r+' / '+s.t;
+  $('#ac').textContent=s.c;
+  $('#pr').style.width=(s.c/Q.length*100)+'%';
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on', t.dataset.m===mode));
+}
+function syncTabs(){ document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.m===mode)); }
+
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT') return;
+  if(e.key==='ArrowRight'){ $('#next')&&$('#next').click(); }
+  if(e.key==='ArrowLeft'){ $('#prev')&&$('#prev').click(); }
+});
+document.addEventListener('click',e=>{
+  const t=e.target.closest('.tab'); if(!t) return;
+  mode=t.dataset.m;
+  if(mode!=='paper'){ idx=0; }
+  render();
+  if(mode!=='paper') save();
+});
+load(); render();
+</script></body></html>
